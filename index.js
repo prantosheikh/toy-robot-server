@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 2000;
@@ -9,7 +9,9 @@ const port = process.env.PORT || 2000;
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lsfsz9s.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lsfsz9s.mongodb.net/?retryWrites=true&w=majority`;
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.efhcwjr.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -23,10 +25,79 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
 
-    await client.db("admin").command({ ping: 1 });
+    const toyCollection = client.db("toyRobots").collection("AddToy");
+
+    app.get("/toyall", async (req, res) => {
+      const result = await toyCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    app.post("/addToy", async (req, res) => {
+      const addToy = req.body;
+      console.log(addToy);
+      const result = await toyCollection.insertOne(addToy);
+      if (result?.insertedId) {
+        return res.status(200).send(result);
+      } else {
+        return res.status(404).send({
+          message: "can not insert try again leter",
+          status: false,
+        });
+      }
+    });
+
+    // app.get("/toyall/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const options = {
+    //     projection: { availableQuantity: 1, photoURL: 1, rating: 1 },
+    //   };
+    //   const result = await toyCollection.findOne(query, options);
+    //   res.send(result);
+    // });
+
+    app.get("/toyall/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      console.log(query);
+
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    // updateToy
+
+    app.patch("/updatetoy/:id", async (req, res) => {
+      const toyUpdate = req.body;
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          toyName: toyUpdate.name,
+          price: toyUpdate.price,
+          availableQuantity: toyUpdate.availableQuantity,
+          rating: toyUpdate.rating,
+          description: toyUpdate.description,
+        },
+      };
+      const result = await toyCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // delete
+
+    app.delete("/toyall/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
