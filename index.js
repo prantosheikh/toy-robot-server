@@ -35,15 +35,15 @@ async function run() {
 
     // ?q=${searchQuery}
 
-    app.get("/getToyByText/:text", async (req, res) => {
-      const searchText = req.params.text;
-      const src = req.query.q;
-      console.log(searchText);
-      // const result = await toyCollection
-      //   .find({ toyName: { $regex: src, $options: "i" } })
-      //   .toArray();
-      // res.send(result);
-    });
+    // app.get("/getToyByText/:text", async (req, res) => {
+    //   const searchText = req.params.text;
+    //   const src = req.query.q;
+    //   console.log(searchText);
+    //   // const result = await toyCollection
+    //   //   .find({ toyName: { $regex: src, $options: "i" } })
+    //   //   .toArray();
+    //   // res.send(result);
+    // });
 
     app.get("/getJobsByText", async (req, res) => {
       const result = await toyCollection.find({}).toArray();
@@ -51,13 +51,31 @@ async function run() {
 
     // Creating index on two fields
 
-    app.get("/toyall", async (req, res) => {
-      const result = await toyCollection.find({}).toArray();
-      res.send(result);
+    app.get("/alltoy/:text", async (req, res) => {
+      console.log(req.params.text);
+      if (req.params.text === "price" || req.params.text === "_id") {
+        const result = await toyCollection
+          .find({ price: req.params.text })
+          .toArray();
+        console.log(result);
+        return res.send(result);
+      } else {
+        const result = await toyCollection.find({}).toArray();
+        res.send(result);
+      }
     });
 
-    // subCategory
+    // app.get("/allToyByCategory/:category", async (req, res) => {
+    //   console.log(req.params.id);
+    //   const toys = await toyCollection
+    //     .find({
+    //       status: req.params.category,
+    //     })
+    //     .toArray();
+    //   res.send(toys);
+    // });
 
+    // subCategory
     const subCategoryCollectios = client
       .db("toyRobots")
       .collection("subCategory");
