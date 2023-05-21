@@ -86,10 +86,10 @@ async function run() {
       res.send(result);
     });
 
+    // post add toy
     app.post("/addToy", async (req, res) => {
       const addToy = req.body;
 
-      console.log(addToy);
       const result = await toyCollection.insertOne(addToy);
       if (result?.insertedId) {
         return res.status(200).send(result);
@@ -101,6 +101,8 @@ async function run() {
       }
     });
 
+    // get specific data
+
     app.get("/toyall/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -111,7 +113,6 @@ async function run() {
     });
 
     // updateToy
-
     app.patch("/updatetoy/:id", async (req, res) => {
       const toyUpdate = req.body;
       const id = req.params.id;
@@ -130,8 +131,7 @@ async function run() {
       res.send(result);
     });
 
-    // delete
-
+    // delete method
     app.delete("/toyall/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -140,7 +140,6 @@ async function run() {
     });
 
     // myToy
-
     app.get("/mytoy", async (req, res) => {
       let query = {};
       if (req.query.email) {
