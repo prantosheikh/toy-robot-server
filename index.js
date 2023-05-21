@@ -9,8 +9,6 @@ const port = process.env.PORT || 2000;
 app.use(cors());
 app.use(express.json());
 
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lsfsz9s.mongodb.net/?retryWrites=true&w=majority`;
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.efhcwjr.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -85,16 +83,6 @@ async function run() {
       }
     });
 
-    // app.get("/toyall/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const options = {
-    //     projection: { availableQuantity: 1, photoURL: 1, rating: 1 },
-    //   };
-    //   const result = await toyCollection.findOne(query, options);
-    //   res.send(result);
-    // });
-
     app.get("/toyall/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -133,7 +121,7 @@ async function run() {
       res.send(result);
     });
 
-    // myToy ==========
+    // myToy
 
     app.get("/mytoy", async (req, res) => {
       let query = {};
