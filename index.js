@@ -27,55 +27,6 @@ async function run() {
     // Send a ping to confirm a successful connection
 
     const toyCollection = client.db("toyRobots").collection("AddToy");
-
-    const indexKeys = { toyName: 1 }; // Replace field1 and field2 with your actual field names
-    const indexOptions = { name: "ToyName" }; // Replace index_name with the desired index name
-    const result = await toyCollection.createIndex(indexKeys, indexOptions);
-    console.log(result);
-
-    // ?q=${searchQuery}
-
-    // app.get("/getToyByText/:text", async (req, res) => {
-    //   const searchText = req.params.text;
-    //   const src = req.query.q;
-    //   console.log(searchText);
-    //   // const result = await toyCollection
-    //   //   .find({ toyName: { $regex: src, $options: "i" } })
-    //   //   .toArray();
-    //   // res.send(result);
-    // });
-
-    app.get("/getJobsByText", async (req, res) => {
-      const result = await toyCollection.find({}).toArray();
-    });
-
-    // Creating index on two fields
-
-    app.get("/alltoy/:text", async (req, res) => {
-      console.log(req.params.text);
-      if (req.params.text === "price" || req.params.text === "_id") {
-        const result = await toyCollection
-          .find({ price: req.params.text })
-          .toArray();
-        console.log(result);
-        return res.send(result);
-      } else {
-        const result = await toyCollection.find({}).toArray();
-        res.send(result);
-      }
-    });
-
-    // app.get("/allToyByCategory/:category", async (req, res) => {
-    //   console.log(req.params.id);
-    //   const toys = await toyCollection
-    //     .find({
-    //       status: req.params.category,
-    //     })
-    //     .toArray();
-    //   res.send(toys);
-    // });
-
-    // subCategory
     const subCategoryCollectios = client
       .db("toyRobots")
       .collection("subCategory");
@@ -83,6 +34,11 @@ async function run() {
     app.get("/subCategory", async (req, res) => {
       const cursor = subCategoryCollectios.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/toyall", async (req, res) => {
+      const result = await toyCollection.find({}).toArray();
       res.send(result);
     });
 
@@ -102,7 +58,6 @@ async function run() {
     });
 
     // get specific data
-
     app.get("/toyall/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -148,25 +103,6 @@ async function run() {
       const result = await toyCollection.find(query).toArray();
       res.send(result);
     });
-
-    // app.get("/mytoy", async (req, res) => {
-    //   let query = {};
-    //   if (req.query.email) {
-    //     query = { email: req.query.email };
-    //   }
-    //   let sortOption = {};
-    //   if (req.query.sort === "a") {
-    //     sortOption = { price: 1 }; // Sort in ascending order
-    //   } else if (req.query.sort === "desc") {
-    //     sortOption = { price: -1 }; // Sort in descending order
-    //   }
-    //   const result = await toyCollection.find(query).sort(sortOption).toArray();
-    //   res.send(result);
-    // });
-
-    // app.get('/allData:/text', async (req, res) => {
-    //   const
-    // } )
 
     // await client.db("admin").command({ ping: 1 });
     console.log(
